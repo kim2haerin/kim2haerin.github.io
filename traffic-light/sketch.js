@@ -17,6 +17,12 @@
 let waitTime= 2000;
 let lastTime= 0;
 let isColor = true;
+let lightState = "green";
+const GREEN_LIGHT_DURABLE = 3000;
+const YELLOW_LIGHT_DURABLE = 500;
+const RED_LIGHT_DURABLLE = 3500;
+
+
 
 
 function setup() {
@@ -26,6 +32,42 @@ function setup() {
 function draw() {
   background(255);
   drawOutlineOfLights();
+  displayCorrectLight();
+  changeStateIfNeeded();
+}
+
+function changeStateIfNeeded(){
+  if (lightState === "green" && millis()>
+  lastTime + GREEN_LIGHT_DURABLE){
+    lightState = "yellow";
+    lastTime = millis();
+  }
+  else if (lightState === "yellow" && millis()>
+  lastTime + GREEN_LIGHT_DURABLE){
+    lightState = "red";
+    lastTime = millis();
+  }
+  if (lightState === "red" && millis()>
+  lastTime + GREEN_LIGHT_DURABLE){
+    lightState = "green";
+    lastTime = millis();
+  }
+}
+
+function displayCorrectLight(){
+  if(lightState === "green"){
+    fill("green");
+    ellipse(width/2, height/2 + 65, 50, 50); 
+  }
+  else if(lightState === "yellow"){
+    fill("yellow");
+    ellipse(width/2, height/2, 50, 50);
+  } 
+  else if(lightState === "red"){
+    fill("red");
+    ellipse(width/2, height/2 - 65, 50, 50); 
+  }
+
 }
 
 function drawOutlineOfLights() {
@@ -33,34 +75,4 @@ function drawOutlineOfLights() {
   rectMode(CENTER);
   fill(0);
   rect(width/2, height/2, 75, 200, 10);
-
-  //lights
-  //if(millis()> lastTime + waitTime){
-  if(color =="red"){  
-  fill("red");
-  ellipse(width/2, height/2 - 65, 50, 50); //top
-  "green" =!"green";
-  "orange" =!"orange";  
-}
-  fill("orange")
-  ellipse(width/2, height/2, 50, 50); //middle
-  fill("green")
-  ellipse(width/2, height/2 + 65, 50, 50); //bottom
-  //pickColor();
-
-//function isColor(){
-  //color = random("red", "green", "orange");
-  //if (color =="red"){
-   // "green" =!"green";
-   // "orange" =!"orange";  
- //}
-  //else if(color ==="green"){
-   // red=!red;
-  //  "orange"=!"orange";
-  //}
- // else if(color ==="orange"){
-  //  "red"=!"red";
-  //  "green"=!"green";
-//  }
-//}
 }
