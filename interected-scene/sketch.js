@@ -1,7 +1,7 @@
 // Chasing game
 // Yedidiah Houngbo
 // Date
-//
+//for two players, try to chase each other
 
 let playerX1 = 180;
 let playerY1 = 180;
