@@ -40,8 +40,8 @@ function draw() {
   text("press d or a", 40, 90);
   text("press s or w", 40, 100);
   fill(220);
-  text("two players", 150, 30);
-  
+  text("two players:", 50, 30);
+  text("try to chase each others", 150, 30);
   fill(225, 49, 350);
   text("first player:", 200, 70);
   text("press any arrow", 200, 90);
