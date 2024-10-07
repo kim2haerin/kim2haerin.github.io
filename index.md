@@ -7,6 +7,7 @@
 [Bouncing Balls](bouncing-balls)
 - [Generative Art](art)
 - [Perlin Noise ball](perlin)
+-[Terrain Generation](terrain)
 
 
 
