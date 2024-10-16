@@ -9,6 +9,7 @@
 - [Perlin Noise ball](perlin)
 -[Terrain Generation](terrain)
 [bubble](bubble)
+-[sound effects demo](sound-effect)
 
 
 
