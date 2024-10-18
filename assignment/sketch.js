@@ -6,8 +6,13 @@ let w = 0;
 let h = 0;
 let s = 'play';
 let score =  0;
+let bgMusic;
 
 let gameOver = false;
+
+function preload() {
+  bgMusic = loadSound("background-music.mp3");
+}
 
 class tile{
   constructor(lane){
@@ -95,5 +100,8 @@ function mousePressed(){
   }
   else{ 
     return gameOver = true;
+  }
+  if (!bgMusic.isPlaying()) {
+    bgMusic.loop();
   }
 }
