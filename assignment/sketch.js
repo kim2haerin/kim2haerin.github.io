@@ -9,7 +9,7 @@ let lastTileTime = 0;
 let gameOver = false;
 
 function preload() {
-  bgMusic = loadSound("BLOODY STREAM (osanime.com).mp3");
+  bgMusic = loadSound("assignment/BLOODY STREAM (osanime.com).mp3");
 }
 
 class Tile {
@@ -54,7 +54,7 @@ function setup() {
   createCanvas(400, 450);
   w = width;
   h = height;
-  bgMusic.loop(); // Start playing music when the game starts
+  //bgMusic.loop(); // Start playing music when the game starts
 }
 
 function draw() {
@@ -116,6 +116,10 @@ function mousePressed() {
     restartGame();
   } 
   else if (tiles.length > 0 && tiles[0].touched(mouseX, mouseY)) {
+    if (s === 'play') {
+      bgMusic.loop();
+      s = 'playing';
+    }
     score += 5;
     tiles.splice(0, 1);
   } 
