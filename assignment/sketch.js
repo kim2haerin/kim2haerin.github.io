@@ -1,22 +1,25 @@
+//yedidiah houngbo
+//piano tile game
+
 let w = 0;
 let h = 0;
 let s = 'play';
 let score = 0;
 let bgMusic;
-let tileInterval = 1000; // Adjust this based on your song's tempo
+let tileInterval = 1000; 
+//Adjust this based on your song's tempo
 let lastTileTime = 0;
-
 let gameOver = false;
 
 function preload() {
-  bgMusic = loadSound("assignment/BLOODY STREAM (osanime.com).mp3");
+  bgMusic = loadSound("sound.mp3");
 }
 
 class Tile {
   constructor(lane) {
     this.lane = lane;
     this.w = w / 4 - 20;
-    this.h = h / 5;
+    this.h =  h / 5;
     this.x = 10 + this.lane * w / 4;
     this.y = -2 * this.h;
     this.speed = 6;
