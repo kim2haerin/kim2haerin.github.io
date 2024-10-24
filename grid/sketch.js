@@ -5,6 +5,7 @@
 let grid;
 let cellSize;
 const GRID_SIZE = 10;
+let shouldToggleNeighbours;
 
 function setup() {
   if (windowWidth < windowHeight) {
@@ -39,11 +40,13 @@ function mousePressed() {
   //toggle self
   toggleCell(x, y);
 
+  if (shouldToggleNeighohood){
   //toggle neighbours
   toggleCell(x - 1, y);
   toggleCell(x + 1, y);
   toggleCell(x, y - 1);
   toggleCell(x, y + 1);
+  }
 }
 
 function toggleCell(x, y) {
@@ -65,9 +68,51 @@ function keyPressed() {
   if (key === "e") {
     grid = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
   }
+  if (key === "n") {
+    shouldToggleNeighbours = !shouldToggleNeighbours;
+  }
+  if (key === " ") {
+    updateGrid();
+  }
 }
 
 
+function updateGrid(){
+  let nextTurn = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+
+  for(let y = 0;y < GRID_SIZE; y++){
+    for(let x = 0; x< GRID_SIZE; x++){
+      let neighbours = 0;
+
+      for(let i = -1; i <= 1; i++){
+        for(let j = -1; j <= 1; j++){
+          if(x+j >= 0 && x+j < GRID_SIZE && y+i >= 0 && y+i < GRID_SIZE){
+            neighbours += grid[y + i][x+j];
+          }
+        }
+      }
+
+      neighbours -= grid[y][x];
+
+      if(grid[y][x] === 1){
+        if(neighbours === 2 || neighbours ===3){
+          nextTurn[y][x] = 1;
+        }
+        else{
+          nextTurn[y][x] = 0;
+        }
+      }
+      if(geid[y][x]===0){
+        if(neighbours === 3){
+          nextTurn[y][x] =1;
+        }
+        else{
+          
+        }
+      }
+    }
+  }
+}
 function displayGrid() {
   for (let y = 0; y < GRID_SIZE; y++) {
     for (let x = 0; x < GRID_SIZE; x++) {
