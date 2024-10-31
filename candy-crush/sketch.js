@@ -3,35 +3,44 @@
 // Date
 
 
-const CELL_SIZE = 100;
-let grid;
-let rows;
-let cols;
-
-//the elements
-let air;
-let earth;
-let fire;
-let flash;
-let forest;
-let ice;
-let water;
-
-function preload() {
-  air = loadImage("block_air_jelly.png");
-  earth = loadImage("block_earth_jelly.png");
-  fire = loadImage("block_fire_jelly.png");
-  flash = loadImage("block_flash_jelly.png");
-  forest = loadImage("block_forest_jelly.png");
-  ice = loadImage("block_ice_jelly.png");
-  water = loadImage("block_water_jelly.png");
-}
+let cellSize;
+let elements = ["earth","air","fire","flash","forest","ice","water"];
+const GRID_SIZE = 9;
+const OPEN_TILE = 0;
+let score = 0;
+const IMPASSIBLE = 1;
+let thePlayer = {
+  x: 0, 
+  y: 0,
+};
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  cols = Math.floor(width/CELL_SIZE);
-  rows = Math.floor(height/CELL_SIZE);
-  grid = generateRandomGrid(cols, rows);
+  if (windowWidth < windowHeight) {
+    createCanvas(windowWidth, windowWidth);
+  }
+  else {
+    createCanvas(windowHeight, windowHeight);
+  }
+  cellSize = height/GRID_SIZE;
+  grid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
+
+  //add player to the grid
+  grid[thePlayer.y][thePlayer.x] = PLAYER;
+}
+
+function windowResized() {
+  if (windowWidth < windowHeight) {
+    resizeCanvas(windowWidth, windowWidth);
+  }
+  else {
+    resizeCanvas(windowHeight, windowHeight);
+  }
+  cellSize = height/GRID_SIZE;
+}
+
+function draw() {
+  background(220);
+  displayGrid();
 }
 
 function mousePressed() {
@@ -54,37 +63,90 @@ function toggleCell(x, y) {
   }
 }
 
-function draw() {
-  background("white");
-  displayGrid();
+function keyPressed() {
+  if (key === "r") {
+    grid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
+  }
+  if (key === "e") {
+    grid = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+  }
+  if (key === "s") {
+    //move down
+    movePlayer(thePlayer.x, thePlayer.y + 1);
+  }
+  if (key === "w") {
+    //move up
+    movePlayer(thePlayer.x, thePlayer.y - 1);
+  }
+  if (key === "d") {
+    //move right
+    movePlayer(thePlayer.x + 1, thePlayer.y);
+  }
+  if (key === "a") {
+    //move left
+    movePlayer(thePlayer.x - 1, thePlayer.y);
+  }
+}
+
+function movePlayer(x, y) {
+  //don't move off grid, and only move in open tiles
+  if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE && grid[y][x] === OPEN_TILE) {
+
+    //previous player location
+    let oldX = thePlayer.x;
+    let oldY = thePlayer.y;
+  
+    //keeping track of where the player is
+    thePlayer.x = x;
+    thePlayer.y = y;
+  
+    //reset the old location to be an empty tile
+    grid[oldY][oldX] = OPEN_TILE;
+  
+    //put the player into the grid
+    grid[thePlayer.y][thePlayer.x] = PLAYER;
+  }
+
+}
+
+function randomElements(){
+  return elements[Math.floor(math.random() * elements.length)]
 }
 
 function displayGrid() {
-  for (let y = 0; y < rows; y++) {
-    for (let x = 0; x < cols; x++) {
-      if (grid[y][x] === 1) {
-        fill(99, 130, 214);
-      }
-      //else if (grid[y][x] === 0) {
-      //fill("white");
-      //}
-      square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
+  for (let y = 0; y < GRID_SIZE; y++) {
+    for (let x = 0; x < GRID_SIZE; x++) {
+      let tile = document.createElement("img");
+      tile.id = r.soString() + "-" + cellSize.toString();
+      tile.src = "./library/" + randomElements() + ".png";
     }
   }
 }
+
 
 function generateRandomGrid(cols, rows) {
   let newGrid = [];
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
     for (let x = 0; x < cols; x++) {
-      //toss in a 0 or 1 randomly
+      //make it a 1 half the time, a 0 half the time
       if (random(100) < 50) {
-        newGrid[y].push(0);
+        newGrid[y].push(IMPASSIBLE);
       }
       else {
-        newGrid[y].push(1);
+        newGrid[y].push(OPEN_TILE);
       }
+    }
+  }
+  return newGrid;
+}
+
+function generateEmptyGrid(cols, rows) {
+  let newGrid = [];
+  for (let y = 0; y < rows; y++) {
+    newGrid.push([]);
+    for (let x = 0; x < cols; x++) {
+      newGrid[y].push(OPEN_TILE);
     }
   }
   return newGrid;
