@@ -11,7 +11,7 @@ let thePlayer = {
   x: 0, 
   y: 0,
 };
-//let ice, rock, fire, forest, air; 
+let elements = ["air", "earth","fire","ice"];
 let backgroundImage;
 
 
@@ -77,9 +77,6 @@ function keyPressed() {
   if (key === "r") {
     grid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
   }
-  if (key === "e") {
-    grid = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-  }
   if (key === "s") {
     //move down
     movePlayer(thePlayer.x, thePlayer.y + 1);
@@ -122,7 +119,7 @@ function movePlayer(x, y) {
 
 function displayGrid() {
   for (let y = 0; y < GRID_SIZE; y++) {
-    for (let x = 0; x < GRID_SIZE; x++) {
+    for (let x = 0; x < GRID_SIZE; x++){
       if (grid[y][x] === IMPASSIBLE) {
         //fill("black");
         image(air, x * cellSize, y * cellSize, cellSize, cellSize);
