@@ -1,176 +1,217 @@
-// Rectangle Grid
-// 2D Array Demo
+//Yedidiah Houngbo
+//candy crush game
 
 let grid;
 let cellSize;
-const GRID_SIZE = 10;
-const AIR = 0;
-const ROCK = 1;
+const GRID_SIZE = 10; // 10x10 grid
+const ICE = 0;
+const FOREST = 1;
 const FIRE = 2;
 const FLASH = 3;
-const PLAYER = 9;
-let thePlayer = {
-  x: 0, 
-  y: 0,
-};
-let elements = ["air", "earth","fire","ice"];
-let backgroundImage;
-
+const AIR = 4;
+const ROCK = 5;
+let elements = ["rock", "fire", "flash", "ice", "water", "air", "forest"];
+// offset to move grid horizontally
+let offsetX = 0; 
+// offset to move grid vertically
+let offsetY = 0;  
+// flag to check if the mouse is being dragged
+let dragging = false;  
+// previous mouse positions for drag calculation
+let lastX, lastY;  
+// Store the selected cell for swapping
+let selectedCell = null;  
+let matchFound = false;
 
 function preload(){
-  air = loadImage("block_air_jelly.png");
-  backgroundImage = loadImage("background_land.png");
-  rock = loadImage("block_earth_jelly.png");
-  fire = loadImage("block_fire_jelly.png");
-  forest = loadImage("block_forest_jelly.png");
-  ice = loadImage("block_ice_jelly.png");
+  // Load images for elements (or blocks)
+  fire = loadImage("images/fire.png");
+  forest = loadImage("images/forest.png");
+  ice = loadImage("images/ice.png");
+  flash = loadImage("images/flash.png");
+  rock = loadImage("images/earth.png");
+  water = loadImage("images/water.png");
+  air = loadImage("images/air.png");
 }
 
 function setup() {
-  if (windowWidth < windowHeight) {
-    createCanvas(windowWidth* 0.8, windowWidth* 0.8);
-  }
-  else {
-    createCanvas(windowHeight* 0.8, windowHeight * 0.8);
-  }
-  cellSize = height/GRID_SIZE;
+  createCanvas(windowWidth * 0.6, windowWidth * 0.6);
+  cellSize = height / GRID_SIZE;
   grid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
-
-  //add player to the grid
-  grid[thePlayer.y][thePlayer.x] = PLAYER;
 }
 
 function windowResized() {
-  if (windowWidth < windowHeight) {
-    resizeCanvas(windowWidth, windowWidth);
-  }
-  else {
-    resizeCanvas(windowHeight, windowHeight);
-  }
-  cellSize = height/GRID_SIZE;
+  resizeCanvas(windowWidth * 0.6, windowWidth * 0.6);
+  cellSize = height / GRID_SIZE;
 }
 
 function draw() {
-  background(220);
+  translate(offsetX, offsetY);
+  
   displayGrid();
+  if (matchFound) {
+    // Check if there's a match every frame
+    findMatches(); 
+  }
 }
 
 function mousePressed() {
-  let x = Math.floor(mouseX/cellSize);
-  let y = Math.floor(mouseY/cellSize);
+  let x = Math.floor((mouseX - offsetX) / cellSize);
+  let y = Math.floor((mouseY - offsetY) / cellSize);
 
-  //toggle self
-  toggleCell(x, y);
-}
-
-function toggleCell(x, y) {
-  //make sure the cell you're toggling is in the grid
-  if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
-    if (grid[y][x] === AIR) {
-      grid[y][x] = ROCK;
+  if (selectedCell === null) {
+    // Select the first cell
+    selectedCell = {x, y}; 
+  } 
+  else {
+    if (isAdjacent(x, y, selectedCell.x, selectedCell.y)) {
+      swapCells(selectedCell.x, selectedCell.y, x, y);
+      // Reset the selection
+      selectedCell = null; 
+    } 
+    else {
+      // New selection if not adjacent
+      selectedCell = {x, y}; 
     }
-    else if (grid[y][x] === ROCK) {
-      grid[y][x] = AIR;
+  }
+}
+
+function mouseReleased() {
+  // Handle dragging if necessary
+}
+
+function isAdjacent(x1, y1, x2, y2) {
+  return Math.abs(x1 - x2) === 1 && y1 === y2 || Math.abs(y1 - y2) === 1 && x1 === x2;
+}
+
+function swapCells(x1, y1, x2, y2) {
+  // Swap elements in grid
+  let temp = grid[y1][x1];
+  grid[y1][x1] = grid[y2][x2];
+  grid[y2][x2] = temp;
+  // Trigger match checking after swapping
+  matchFound = true; 
+}
+
+function findMatches() {
+  let matches = [];
+  
+  // Horizontal matches
+  for (let y = 0; y < GRID_SIZE; y++) {
+    for (let x = 0; x < GRID_SIZE - 2; x++) {
+      let val = grid[y][x];
+      if (val !== ICE && val === grid[y][x + 1] && val === grid[y][x + 2]) {
+        matches.push({type: 'horizontal', x, y});
+      }
+    }
+  }
+
+  // Vertical matches
+  for (let x = 0; x < GRID_SIZE; x++) {
+    for (let y = 0; y < GRID_SIZE - 2; y++) {
+      let val = grid[y][x];
+      if (val !== ICE && val === grid[y + 1][x] && val === grid[y + 2][x]) {
+        matches.push({type: 'vertical', x, y});
+      }
+    }
+  }
+
+  // Process matches
+  if (matches.length > 0) {
+    clearMatches(matches);
+    matchFound = false;
+  }
+}
+
+function clearMatches(matches) {
+  for (let match of matches) {
+    let { x, y } = match;
+    
+    // Horizontal match clearing
+    if (match.type === 'horizontal') {
+      for (let i = 0; i < 3; i++) {
+        // Set matched cells to ICE
+        grid[y][x + i] = ICE; 
+      }
+    }
+    
+    // Vertical match clearing
+    if (match.type === 'vertical') {
+      for (let i = 0; i < 3; i++) {
+        // Set matched cells to ICE
+        grid[y + i][x] = ICE; 
+      }
+    }
+  }
+  
+  applyGravity();
+}
+
+function applyGravity() {
+  // Apply gravity to make elements fall down
+  for (let x = 0; x < GRID_SIZE; x++) {
+    for (let y = GRID_SIZE - 1; y >= 0; y--) {
+      if (grid[y][x] === ICE) {
+        let emptyY = y;
+        
+        // Find the first non-empty cell above
+        for (let newY = y - 1; newY >= 0; newY--) {
+          if (grid[newY][x] !== ICE) {
+            // Drop the element down
+            grid[emptyY][x] = grid[newY][x];
+            // Set the original position to ICE
+            grid[newY][x] = ICE; 
+            break;
+          }
+        }
+      }
+    }
+  }
+  refillGrid();
+}
+
+function refillGrid() {
+  // Refill empty spaces with random elements
+  for (let x = 0; x < GRID_SIZE; x++) {
+    for (let y = 0; y < GRID_SIZE; y++) {
+      if (grid[y][x] === ICE) {
+        // Refill with random element
+        grid[y][x] = Math.floor(random(0, elements.length)); 
+      }
     }
   }
 }
-
-function keyPressed() {
-  if (key === "r") {
-    grid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
-  }
-  if (key === "s") {
-    //move down
-    movePlayer(thePlayer.x, thePlayer.y + 1);
-  }
-  if (key === "w") {
-    //move up
-    movePlayer(thePlayer.x, thePlayer.y - 1);
-  }
-  if (key === "d") {
-    //move right
-    movePlayer(thePlayer.x + 1, thePlayer.y);
-  }
-  if (key === "a") {
-    //move left
-    movePlayer(thePlayer.x - 1, thePlayer.y);
-  }
-}
-
-function movePlayer(x, y) {
-  //don't move off grid, and only move in open tiles
-  if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE && grid[y][x] === AIR) {
-
-    //previous player location
-    let oldX = thePlayer.x;
-    let oldY = thePlayer.y;
-  
-    //keeping track of where the player is
-    thePlayer.x = x;
-    thePlayer.y = y;
-  
-    //reset the old location to be an empty tile
-    grid[oldY][oldX] = AIR;
-  
-    //put the player into the grid
-    grid[thePlayer.y][thePlayer.x] = PLAYER;
-  }
-
-}
-
 
 function displayGrid() {
   for (let y = 0; y < GRID_SIZE; y++) {
-    for (let x = 0; x < GRID_SIZE; x++){
-      if (grid[y][x] === AIR) {
-        //fill("black");
-        image(air, x * cellSize, y * cellSize, cellSize, cellSize);
-      }
-      else if (grid[y][x] === ROCK) {
-        //fill("white");
-        image(rock, x * cellSize, y * cellSize, cellSize, cellSize);
-      }
-      else if (grid[y][x] === FIRE) {
-        //fill("white");
-        image(fire, x * cellSize, y * cellSize, cellSize, cellSize);
-      }
-      else if (grid[y][x] === PLAYER) {
-        //fill("red");
-        image(fire, x * cellSize, y * cellSize, cellSize, cellSize );
-        square(x * cellSize, y * cellSize, cellSize);
-      }
+    for (let x = 0; x < GRID_SIZE; x++) {
+      let element = grid[y][x];
+      let img = getElementImage(element);
+      image(img, x * cellSize, y * cellSize, cellSize, cellSize);
     }
   }
 }
 
+function getElementImage(element) {
+  switch (element) {
+  case AIR: return air;
+  case ROCK: return rock;
+  case ICE: return ice;
+  case FOREST: return forest;
+  case FIRE: return fire;
+  case FLASH: return flash;
+  // default case
+  default: return ice; 
+  }
+}
 
 function generateRandomGrid(cols, rows) {
   let newGrid = [];
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
     for (let x = 0; x < cols; x++) {
-      //make it a 1 half the time, a 0 half the time
-      let choice = random(100);
-      if (choice < 30) {
-        newGrid[y].push(ROCK);
-      }
-      else if (choice < 40) {
-        newGrid[y].push(FIRE);
-      }
-      else {
-        newGrid[y].push(AIR);
-      }
-    }
-  }
-  return newGrid;
-}
-
-function generateEmptyGrid(cols, rows) {
-  let newGrid = [];
-  for (let y = 0; y < rows; y++) {
-    newGrid.push([]);
-    for (let x = 0; x < cols; x++) {
-      newGrid[y].push(AIR);
+      // Randomly select an element
+      newGrid[y].push(Math.floor(random(0, elements.length))); 
     }
   }
   return newGrid;
