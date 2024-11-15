@@ -1,5 +1,5 @@
 //Yedidiah Houngbo
-//candy crush game
+// grid base game(candy crush game)
 
 let grid;
 let cellSize;
@@ -22,6 +22,8 @@ let lastX, lastY;
 // Store the selected cell for swapping
 let selectedCell = null;  
 let matchFound = false;
+let x = 0;
+let y = 0;
 
 function preload(){
   // Load images for elements (or blocks)
@@ -35,13 +37,13 @@ function preload(){
 }
 
 function setup() {
-  createCanvas(windowWidth * 0.6, windowWidth * 0.6);
+  createCanvas(windowWidth * 0.4, windowWidth * 0.4);
   cellSize = height / GRID_SIZE;
   grid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
 }
 
 function windowResized() {
-  resizeCanvas(windowWidth * 0.6, windowWidth * 0.6);
+  resizeCanvas(windowWidth * 0.4, windowWidth * 0.4);
   cellSize = height / GRID_SIZE;
 }
 
@@ -64,10 +66,10 @@ function mousePressed() {
     selectedCell = {x, y}; 
   } 
   else {
-    if (isAdjacent(x, y, selectedCell.x, selectedCell.y)) {
+    if (isAdjacent(x, y, selectedCell.x, selectedCell.y)){
       swapCells(selectedCell.x, selectedCell.y, x, y);
       // Reset the selection
-      selectedCell = null; 
+      selectedCell = null;
     } 
     else {
       // New selection if not adjacent
@@ -84,7 +86,7 @@ function isAdjacent(x1, y1, x2, y2) {
   return Math.abs(x1 - x2) === 1 && y1 === y2 || Math.abs(y1 - y2) === 1 && x1 === x2;
 }
 
-function swapCells(x1, y1, x2, y2) {
+function swapCells(x1, y1, x2, y2){
   // Swap elements in grid
   let temp = grid[y1][x1];
   grid[y1][x1] = grid[y2][x2];
@@ -100,7 +102,7 @@ function findMatches() {
   for (let y = 0; y < GRID_SIZE; y++) {
     for (let x = 0; x < GRID_SIZE - 2; x++) {
       let val = grid[y][x];
-      if (val !== ICE && val === grid[y][x + 1] && val === grid[y][x + 2]) {
+      if (val !== ICE && val === grid[y][x + 1] && val === grid[y][x + 2]){
         matches.push({type: 'horizontal', x, y});
       }
     }
@@ -110,7 +112,7 @@ function findMatches() {
   for (let x = 0; x < GRID_SIZE; x++) {
     for (let y = 0; y < GRID_SIZE - 2; y++) {
       let val = grid[y][x];
-      if (val !== ICE && val === grid[y + 1][x] && val === grid[y + 2][x]) {
+      if (val !== ICE && val === grid[y + 1][x] && val === grid[y + 2][x]){
         matches.push({type: 'vertical', x, y});
       }
     }
