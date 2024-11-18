@@ -15,6 +15,7 @@
 -[Grid Demo](person)
 -[Walker OOP](walker-oop)
 -[walker OOP](walker-oop-array)
+-[firework OOP](firework)
 
 
 
