@@ -17,6 +17,7 @@
 -[walker OOP](walker-oop-array)
 -[firework OOP](firework)
 -[nodes OOP](nodes)
+-[collide to the library](collide)
 
 
 
