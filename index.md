@@ -19,6 +19,7 @@
 -[nodes OOP](nodes)
 -[collide to the library](collide)
 -[localeStorage Demo](local-storage)
+[inheritance Demo](inheritance)
 
 
 
