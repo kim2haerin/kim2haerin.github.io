@@ -20,6 +20,8 @@
 -[collide to the library](collide)
 -[localeStorage Demo](local-storage)
 [inheritance Demo](inheritance)
+- [Fractul Circles](circle)
+-[Sierpinksi Triangle](triangle)
 
 
 
